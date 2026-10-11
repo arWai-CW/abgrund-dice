@@ -1,6 +1,6 @@
 // 拆解 46 組爆炸池的 1.444ms 到底花在哪裡
-use rolling_rs::engine::roll;
-use rolling_rs::rng::{CryptoRng, DiceRng};
+use abgrund_dice::engine::roll;
+use abgrund_dice::rng::{CryptoRng, DiceRng};
 use std::time::Instant;
 
 const GROUPS: usize = 46;

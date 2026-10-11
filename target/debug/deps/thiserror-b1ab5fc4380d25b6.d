@@ -1,0 +1,14 @@
+/Volumes/MP44L/Git/discord-bot/external/abgrund-dice/target/debug/deps/thiserror-b1ab5fc4380d25b6.d: /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/lib.rs /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/aserror.rs /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/display.rs /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/var.rs /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/private.rs /Volumes/MP44L/Git/discord-bot/external/abgrund-dice/target/debug/build/thiserror-18f84fd5294448b1/out/private.rs
+
+/Volumes/MP44L/Git/discord-bot/external/abgrund-dice/target/debug/deps/libthiserror-b1ab5fc4380d25b6.rlib: /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/lib.rs /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/aserror.rs /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/display.rs /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/var.rs /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/private.rs /Volumes/MP44L/Git/discord-bot/external/abgrund-dice/target/debug/build/thiserror-18f84fd5294448b1/out/private.rs
+
+/Volumes/MP44L/Git/discord-bot/external/abgrund-dice/target/debug/deps/libthiserror-b1ab5fc4380d25b6.rmeta: /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/lib.rs /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/aserror.rs /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/display.rs /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/var.rs /Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/private.rs /Volumes/MP44L/Git/discord-bot/external/abgrund-dice/target/debug/build/thiserror-18f84fd5294448b1/out/private.rs
+
+/Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/lib.rs:
+/Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/aserror.rs:
+/Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/display.rs:
+/Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/var.rs:
+/Users/arwai/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/private.rs:
+/Volumes/MP44L/Git/discord-bot/external/abgrund-dice/target/debug/build/thiserror-18f84fd5294448b1/out/private.rs:
+
+# env-dep:OUT_DIR=/Volumes/MP44L/Git/discord-bot/external/abgrund-dice/target/debug/build/thiserror-18f84fd5294448b1/out

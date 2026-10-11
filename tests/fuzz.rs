@@ -13,10 +13,10 @@
 //!
 //! 決定性（固定 seed），CI 可重現。
 
-use rolling_rs::engine::{format_result, roll};
-use rolling_rs::error::RollError;
-use rolling_rs::rng::SeededRng;
-use rolling_rs::types::RollResult;
+use abgrund_dice::engine::{format_result, roll};
+use abgrund_dice::error::RollError;
+use abgrund_dice::rng::SeededRng;
+use abgrund_dice::types::RollResult;
 
 /// xorshift64*：夠用、無依賴、決定性。
 struct Rng(u64);

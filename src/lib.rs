@@ -288,6 +288,27 @@ fn split_formula_comment(src: &str) -> PyResult<(String, String)> {
     engine::split_formula_comment(src).map_err(PyErr::from)
 }
 
+/// 設定錯誤訊息語言。
+///
+/// 支援的值：`"zh_TW"`（預設，繁體中文）或 `"en"`（英文）。
+/// 其他值會產生 `ValueError`。
+#[pyfunction]
+fn set_language(lang: &str) -> PyResult<()> {
+    match lang {
+        "zh_TW" | "zh-tw" => {
+            crate::error::set_language(crate::error::Language::ZhTW);
+            Ok(())
+        }
+        "en" | "en-US" | "en_US" => {
+            crate::error::set_language(crate::error::Language::En);
+            Ok(())
+        }
+        _ => Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(
+            "Unsupported language. Use 'zh_TW' or 'en'.",
+        )),
+    }
+}
+
 #[pymodule]
 fn rolling_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyDieRoll>()?;
@@ -297,6 +318,7 @@ fn rolling_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(roll, m)?)?;
     m.add_function(wrap_pyfunction!(format_result, m)?)?;
     m.add_function(wrap_pyfunction!(split_formula_comment, m)?)?;
+    m.add_function(wrap_pyfunction!(set_language, m)?)?;
     m.add("RollError", m.py().get_type::<PyRollError>())?;
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     // 政策常數曝光給 Python：`cogs` 與測試要引用同一個數字，不要各自硬編

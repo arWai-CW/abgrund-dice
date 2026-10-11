@@ -1,5 +1,5 @@
-use rolling_rs::engine::roll;
-use rolling_rs::rng::{CryptoRng, DiceRng, SeededRng};
+use abgrund_dice::engine::roll;
+use abgrund_dice::rng::{CryptoRng, DiceRng, SeededRng};
 use std::time::Instant;
 
 fn time<F: FnMut()>(label: &str, iters: u32, mut f: F) {

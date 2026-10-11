@@ -5,13 +5,13 @@
 //! CSPRNG 路徑、`SeededRng`、內部不變量、以及 stack-overflow / 長度上限這類
 //! 只有在 Rust 才會失控的東西。
 
-use rolling_rs::engine::{format_result, roll, split_formula_comment};
-use rolling_rs::error::{RollError, Span, SpannedRollError};
-use rolling_rs::rng::{CryptoRng, SeededRng};
-use rolling_rs::evaluator::self_contained;
-use rolling_rs::types::{DieKind, MAX_DICE_DETAIL};
+use abgrund_dice::engine::{format_result, roll, split_formula_comment};
+use abgrund_dice::error::{RollError, Span, SpannedRollError};
+use abgrund_dice::rng::{CryptoRng, SeededRng};
+use abgrund_dice::evaluator::self_contained;
+use abgrund_dice::types::{DieKind, MAX_DICE_DETAIL};
 
-fn roll_seeded(formula: &str, seed: u64) -> rolling_rs::types::RollResult {
+fn roll_seeded(formula: &str, seed: u64) -> abgrund_dice::types::RollResult {
     roll(formula, &mut SeededRng::new(seed)).expect("formula should roll")
 }
 

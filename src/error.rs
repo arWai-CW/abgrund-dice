@@ -14,7 +14,10 @@
 //! 與舊版逐字相同——差分測試對拍的就是它。
 
 use pyo3::prelude::*;
-use thiserror::Error;
+use std::error::Error;
+use once_cell::sync::Lazy;
+use std::collections::HashMap;
+use std::sync::Mutex;
 
 /// Python 例外類別（`rolling_rs.RollError`）。
 ///
@@ -31,43 +34,70 @@ mod exc {
 
 pub use exc::RollError as PyRollError;
 
+/// 支援的語言
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Language {
+    ZhTW, // 繁體中文（預設）
+    En,   // 英文
+}
+
+/// 全域語言設定（執行期可變更）
+static CURRENT_LANG: Lazy<Mutex<Language>> = Lazy::new(|| Mutex::new(Language::ZhTW));
+
+/// 設定當前語言（可由 Python 呼叫）
+pub fn set_language(lang: Language) {
+    *CURRENT_LANG.lock().unwrap() = lang;
+}
+
+/// 取得當前語言
+pub fn current_language() -> Language {
+    *CURRENT_LANG.lock().unwrap()
+}
+
+/// 錯誤訊息的翻譯表：錯誤變種名稱 → 語言 → 訊息樣板。
+/// 樣板使用 `{0}` 作為單一參數佔位符（與原本的 `Display` 實作相容）。
+static TRANSLATIONS: Lazy<HashMap<&'static str, HashMap<Language, &'static str>>> =
+    Lazy::new(|| {
+        let mut m = HashMap::new();
+        macro_rules! add {
+            ($variant:ident, $zh:expr, $en:expr) => {
+                let mut inner = HashMap::new();
+                inner.insert(Language::ZhTW, $zh);
+                inner.insert(Language::En, $en);
+                m.insert(stringify!($variant), inner);
+            };
+        }
+
+        add!(Parse, "錯誤：無法解析的公式：{0}", "Error: Unable to parse formula: {0}");
+        add!(DiceCountOutOfRange, "錯誤：骰數必須介於 1~100", "Error: Dice count must be between 1 and 100");
+        add!(FacesOutOfRange, "錯誤：骰面必須介於 1~100000", "Error: Face count must be between 1 and 100000");
+        add!(FormulaTooLong, "錯誤：公式過長", "Error: Formula too long");
+        add!(DivisionByZero, "錯誤：除以零", "Error: Division by zero");
+        add!(ExplodeCapExceeded, "錯誤：爆炸次數上限為 {0}", "Error: Explode cap exceeded {0}");
+        add!(MinTooLarge, "錯誤：min 不可大於 {0}", "Error: min cannot be greater than {0}");
+        add!(MaxTooSmall, "錯誤：max 不可小於 {0}", "Error: max cannot be smaller than {0}");
+        add!(ValueOutOfRange, "錯誤：數值必須介於 0~100000", "Error: Value must be between 0 and 100000");
+        add!(PoolLengthMismatch, "錯誤：骰池長度不同", "Error: Dice pool length mismatch");
+        add!(CoinModifierNotSupported, "錯誤：硬幣不支援該修飾詞", "Error: Modifier not supported for coin");
+        m
+    });
+
 /// 指示塊最寬幾個**字元**。超過就只顯示錯誤附近的視窗。
 const POINTER_MAX_WIDTH: usize = 100;
 
 /// 錯誤訊息本體（不含位置）。
-#[derive(Error, Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RollError {
-    #[error("錯誤：無法解析的公式：{0}")]
     Parse(String),
-
-    #[error("錯誤：骰數必須介於 1~100")]
     DiceCountOutOfRange,
-
-    #[error("錯誤：骰面必須介於 1~100000")]
     FacesOutOfRange,
-
-    #[error("錯誤：公式過長")]
     FormulaTooLong,
-
-    #[error("錯誤：除以零")]
     DivisionByZero,
-
-    #[error("錯誤：爆炸次數上限為 {0}")]
     ExplodeCapExceeded(usize),
-
-    #[error("錯誤：min 不可大於 {0}")]
     MinTooLarge(i64),
-
-    #[error("錯誤：max 不可小於 {0}")]
     MaxTooSmall(i64),
-
-    #[error("錯誤：數值必須介於 0~100000")]
     ValueOutOfRange,
-
-    #[error("錯誤：骰池長度不同")]
     PoolLengthMismatch,
-
-    #[error("錯誤：硬幣不支援該修飾詞")]
     CoinModifierNotSupported,
 }
 
@@ -94,7 +124,7 @@ impl RollError {
 /// - 前後段各自包一個行內 code span——公式可能含 `*`，裸露會被 Discord
 ///   當成乘法／強調標記而吃字
 /// - 出錯的部分本身含 `*` / `_` / `` ` `` 時**退化成只包 code span**：
-///   那些字元會讓 `***` 破版，寧可沒有粗斜體也不要顯示錯亂
+///   那些字元會讖 `***` 破版，寧可沒有粗斜體也不要顯示錯亂
 /// - span 不在字元邊界或整個落空時，整條包 code span（不硬切）
 fn mark_span(src: &str, span: Span) -> String {
     let (start, end) = (span.start.min(src.len()), span.end.min(src.len()));
@@ -216,7 +246,7 @@ impl SpannedRollError {
         self
     }
 
-    /// 錯誤訊息本體，**與舊 Python 逐字相同**。
+    /// 錯誤訊息本體（**與舊 Python 逐字相同**，不含任何標記）。
     pub fn message(&self) -> String {
         self.error.to_string()
     }
@@ -294,7 +324,10 @@ impl SpannedRollError {
         if pointer.is_empty() {
             return self.message();
         }
-        format!("{}\n\n```\n{pointer}\n```", self.message())
+        format!(
+            "{}\n\n```\n{pointer}\n```",
+            self.message()
+        )
     }
 }
 
@@ -328,6 +361,49 @@ impl From<SpannedRollError> for pyo3::PyErr {
             let _ = value.setattr("span", span);
             exc
         })
+    }
+}
+
+/// 為 `RollError` 的 `Display` 實作使用 i18n 翻譯表。
+impl std::fmt::Display for RollError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // 取得 variant 名稱
+        let variant = match self {
+            RollError::Parse(_) => "Parse",
+            RollError::DiceCountOutOfRange => "DiceCountOutOfRange",
+            RollError::FacesOutOfRange => "FacesOutOfRange",
+            RollError::FormulaTooLong => "FormulaTooLong",
+            RollError::DivisionByZero => "DivisionByZero",
+            RollError::ExplodeCapExceeded(_) => "ExplodeCapExceeded",
+            RollError::MinTooLarge(_) => "MinTooLarge",
+            RollError::MaxTooSmall(_) => "MaxTooSmall",
+            RollError::ValueOutOfRange => "ValueOutOfRange",
+            RollError::PoolLengthMismatch => "PoolLengthMismatch",
+            RollError::CoinModifierNotSupported => "CoinModifierNotSupported",
+        };
+
+        // 取得對應語言的樣板
+        let lang = *CURRENT_LANG.lock().unwrap();
+        let template = TRANSLATIONS
+            .get(variant)
+            .and_then(|map| map.get(&lang))
+            .unwrap_or(&""); // 若找不到則回空字串（保守）
+
+        // 替換 {0} 參數
+        let formatted = match self {
+            RollError::Parse(s) => template.replace("{0}", s),
+            RollError::ExplodeCapExceeded(n) => template.replace("{0}", &n.to_string()),
+            RollError::MinTooLarge(n) => template.replace("{0}", &n.to_string()),
+            RollError::MaxTooSmall(n) => template.replace("{0}", &n.to_string()),
+            _ => template.to_string(),
+        };
+        write!(f, "{}", formatted)
+    }
+}
+
+impl Error for RollError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        None
     }
 }
 
@@ -417,5 +493,38 @@ mod tests {
             .with_formula("abc");
         assert_eq!(e.pointer(), "abc\n^^^", "pointer 仍保留（結構化欄位）");
         assert!(!e.for_display().contains("```"));
+    }
+
+    // i18n 測試
+    #[test]
+    fn i18n_switch_language() {
+        // 預設中文
+        assert_eq!(
+            RollError::Parse("test".to_string()).to_string(),
+            "錯誤：無法解析的公式：test"
+        );
+        // 切換英文
+        set_language(Language::En);
+        assert_eq!(
+            RollError::Parse("test".to_string()).to_string(),
+            "Error: Unable to parse formula: test"
+        );
+        // 再切回中文
+        set_language(Language::ZhTW);
+        assert_eq!(
+            RollError::Parse("test".to_string()).to_string(),
+            "錯誤：無法解析的公式：test"
+        );
+        // 其他錯誤類型也應切換
+        set_language(Language::En);
+        assert_eq!(
+            RollError::DiceCountOutOfRange.to_string(),
+            "Error: Dice count must be between 1 and 100"
+        );
+        set_language(Language::ZhTW);
+        assert_eq!(
+            RollError::DiceCountOutOfRange.to_string(),
+            "錯誤：骰數必須介於 1~100"
+        );
     }
 }
