@@ -310,7 +310,7 @@ fn set_language(lang: &str) -> PyResult<()> {
 }
 
 #[pymodule]
-fn rolling_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn abgrund_dice(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyDieRoll>()?;
     m.add_class::<PyDiceGroup>()?;
     m.add_class::<PyCheckResult>()?;

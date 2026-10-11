@@ -3,12 +3,12 @@ requires = ["maturin>=1.7,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "rolling_rs"
+name = "abgrund_dice"
 description = "Dice rolling engine (Rust/PyO3) for the Foundry VTT grammar subset"
 requires-python = ">=3.13"
 classifiers = ["Programming Language :: Rust"]
 dynamic = ["version"]
 
 [tool.maturin]
-module-name = "rolling_rs"
+module-name = "abgrund_dice"
 features = ["pyo3/extension-module"]

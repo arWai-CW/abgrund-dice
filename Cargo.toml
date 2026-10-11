@@ -11,7 +11,7 @@ crate-type = ["cdylib", "rlib"]
 
 [features]
 default = []
-# 只在「建 wheel」時開啟：開啟後不連結 libpython（由直譯器在 import 時提供符號），
+# 只在「建 wheel」時開啟：開啟後不連結 libpython（由直譯器在 import 時提供符號）
 # 因此 `cargo test` 必須在關閉此 feature 的情況下執行。
 extension-module = ["pyo3/extension-module"]
 
