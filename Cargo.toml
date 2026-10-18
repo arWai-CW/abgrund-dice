@@ -25,6 +25,25 @@ once_cell = "1.21.4"
 
 [dev-dependencies]
 
+# Integration tests live at the repo root (outside the crate) so they can be
+# shared with the Python differential suite. Cargo resolves these relative
+# paths from the crate directory.
+[[test]]
+name = "engine"
+path = "../../tests/engine.rs"
+
+[[test]]
+name = "fuzz"
+path = "../../tests/fuzz.rs"
+
+[[example]]
+name = "bench"
+path = "../../examples/bench.rs"
+
+[[example]]
+name = "profile"
+path = "../../examples/profile.rs"
+
 [profile.release]
 lto = true
 codegen-units = 1

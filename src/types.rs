@@ -1,6 +1,5 @@
 use crate::error::RollError;
 
-
 /// Python 的 `int | float`。
 ///
 /// `is_float` **只**影響回傳給 Python 的型別（`isinstance(total, int)`、`repr()`）；
@@ -78,7 +77,6 @@ impl DieRoll {
             reroll_history: None,
         }
     }
-
 }
 
 /// 骰子種類。
@@ -109,10 +107,7 @@ impl DieKind {
     pub const fn domain(self, faces: u32) -> DiceDomain {
         match self {
             DieKind::Normal => DiceDomain::normal(faces),
-            DieKind::Fate => DiceDomain {
-                lo: -1,
-                hi: 1,
-            },
+            DieKind::Fate => DiceDomain { lo: -1, hi: 1 },
             DieKind::Coin => DiceDomain::coin(),
         }
     }

@@ -171,9 +171,10 @@ mod tests {
     #[test]
     fn decimal_number() {
         assert_eq!(parse_number("2.7"), 2.7);
-        assert_eq!(texts("round(1d1*2.7)"), [
-            "round", "(", "1", "d", "1", "*", "2.7", ")"
-        ]);
+        assert_eq!(
+            texts("round(1d1*2.7)"),
+            ["round", "(", "1", "d", "1", "*", "2.7", ")"]
+        );
     }
 
     #[test]
@@ -194,11 +195,10 @@ mod tests {
 
     #[test]
     fn whitespace_is_skipped() {
-        assert_eq!(kinds("  1 \t+\n2 "), [
-            TokenKind::Number,
-            TokenKind::Plus,
-            TokenKind::Number
-        ]);
+        assert_eq!(
+            kinds("  1 \t+\n2 "),
+            [TokenKind::Number, TokenKind::Plus, TokenKind::Number]
+        );
     }
 
     #[test]

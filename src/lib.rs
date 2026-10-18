@@ -5,12 +5,12 @@
 //! / `RollError`。
 
 pub mod ast;
+pub mod engine;
 pub mod error;
 pub mod evaluator;
 pub mod lexer;
 pub mod parser;
 pub mod rng;
-pub mod engine;
 pub mod types;
 
 use pyo3::exceptions::PyTypeError;
@@ -113,7 +113,12 @@ impl From<&DiceGroup> for PyDiceGroup {
     }
 }
 
-#[pyclass(name = "CheckResult", module = "rolling_rs", frozen, skip_from_py_object)]
+#[pyclass(
+    name = "CheckResult",
+    module = "rolling_rs",
+    frozen,
+    skip_from_py_object
+)]
 #[derive(Clone)]
 pub struct PyCheckResult {
     #[pyo3(get)]
@@ -189,9 +194,7 @@ impl PyRollResult {
     fn __repr__(&self) -> String {
         format!(
             "RollResult(formula={:?}, total={}, terms={:?})",
-            self.inner.formula,
-            self.inner.total.value,
-            self.inner.terms
+            self.inner.formula, self.inner.total.value, self.inner.terms
         )
     }
 }

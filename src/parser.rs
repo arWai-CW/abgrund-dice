@@ -112,7 +112,9 @@ pub fn strip_formula(formula: &str) -> Result<&str, SpannedRollError> {
     }
     let src = formula.split('#').next().unwrap_or("").trim();
     if src.is_empty() {
-        return Err(SpannedRollError::new(RollError::Parse(formula.to_string())).with_formula(formula));
+        return Err(
+            SpannedRollError::new(RollError::Parse(formula.to_string())).with_formula(formula)
+        );
     }
     Ok(src)
 }
@@ -379,7 +381,14 @@ impl<'src> ParserCtx<'src> {
                 let span = Span::new(tok.start as usize, tok.end as usize);
                 self.bump(input)?;
                 // `4d6` / `4df` / `4dc` 之後才算是骰子，否則只是純數字
-                match self.dice_suffix(input, RawCount::Lit { value: lit.value, span }, start)? {
+                match self.dice_suffix(
+                    input,
+                    RawCount::Lit {
+                        value: lit.value,
+                        span,
+                    },
+                    start,
+                )? {
                     Some(expr) => Ok(expr),
                     None => {
                         self.botched_dice(input, start)?;
@@ -661,11 +670,7 @@ impl<'src> ParserCtx<'src> {
     ///
     /// `domain` 是骰值合法範圍；動態骰面時為 `None`，`min`/`max` 的檢查
     /// 延到執行期（見 `evaluator`）。
-    fn dice_mod<'i>(
-        &self,
-        input: &mut Tokens<'i>,
-        domain: Option<DiceDomain>,
-    ) -> PResult<DiceMod> {
+    fn dice_mod<'i>(&self, input: &mut Tokens<'i>, domain: Option<DiceDomain>) -> PResult<DiceMod> {
         let Some(name) = self.peek_ident(input) else {
             return Err(self.fail(input));
         };

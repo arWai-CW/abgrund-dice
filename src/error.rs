@@ -13,10 +13,10 @@
 //! 訊息的「本體」（[`SpannedRollError::message`]）永遠不含這些裝飾，
 //! 與舊版逐字相同——差分測試對拍的就是它。
 
-use pyo3::prelude::*;
-use std::error::Error;
 use once_cell::sync::Lazy;
+use pyo3::prelude::*;
 use std::collections::HashMap;
+use std::error::Error;
 use std::sync::Mutex;
 
 /// Python 例外類別（`rolling_rs.RollError`）。
@@ -68,17 +68,53 @@ static TRANSLATIONS: Lazy<HashMap<&'static str, HashMap<Language, &'static str>>
             };
         }
 
-        add!(Parse, "錯誤：無法解析的公式：{0}", "Error: Unable to parse formula: {0}");
-        add!(DiceCountOutOfRange, "錯誤：骰數必須介於 1~100", "Error: Dice count must be between 1 and 100");
-        add!(FacesOutOfRange, "錯誤：骰面必須介於 1~100000", "Error: Face count must be between 1 and 100000");
+        add!(
+            Parse,
+            "錯誤：無法解析的公式：{0}",
+            "Error: Unable to parse formula: {0}"
+        );
+        add!(
+            DiceCountOutOfRange,
+            "錯誤：骰數必須介於 1~100",
+            "Error: Dice count must be between 1 and 100"
+        );
+        add!(
+            FacesOutOfRange,
+            "錯誤：骰面必須介於 1~100000",
+            "Error: Face count must be between 1 and 100000"
+        );
         add!(FormulaTooLong, "錯誤：公式過長", "Error: Formula too long");
         add!(DivisionByZero, "錯誤：除以零", "Error: Division by zero");
-        add!(ExplodeCapExceeded, "錯誤：爆炸次數上限為 {0}", "Error: Explode cap exceeded {0}");
-        add!(MinTooLarge, "錯誤：min 不可大於 {0}", "Error: min cannot be greater than {0}");
-        add!(MaxTooSmall, "錯誤：max 不可小於 {0}", "Error: max cannot be smaller than {0}");
-        add!(ValueOutOfRange, "錯誤：數值必須介於 0~100000", "Error: Value must be between 0 and 100000");
-        add!(PoolLengthMismatch, "錯誤：骰池長度不同", "Error: Dice pool length mismatch");
-        add!(CoinModifierNotSupported, "錯誤：硬幣不支援該修飾詞", "Error: Modifier not supported for coin");
+        add!(
+            ExplodeCapExceeded,
+            "錯誤：爆炸次數上限為 {0}",
+            "Error: Explode cap exceeded {0}"
+        );
+        add!(
+            MinTooLarge,
+            "錯誤：min 不可大於 {0}",
+            "Error: min cannot be greater than {0}"
+        );
+        add!(
+            MaxTooSmall,
+            "錯誤：max 不可小於 {0}",
+            "Error: max cannot be smaller than {0}"
+        );
+        add!(
+            ValueOutOfRange,
+            "錯誤：數值必須介於 0~100000",
+            "Error: Value must be between 0 and 100000"
+        );
+        add!(
+            PoolLengthMismatch,
+            "錯誤：骰池長度不同",
+            "Error: Dice pool length mismatch"
+        );
+        add!(
+            CoinModifierNotSupported,
+            "錯誤：硬幣不支援該修飾詞",
+            "Error: Modifier not supported for coin"
+        );
         m
     });
 
@@ -290,11 +326,7 @@ impl SpannedRollError {
         if view_end < chars.len() {
             line.push('…');
         }
-        format!(
-            "{line}\n{}{}",
-            " ".repeat(caret_pad),
-            "^".repeat(underline)
-        )
+        format!("{line}\n{}{}", " ".repeat(caret_pad), "^".repeat(underline))
     }
 
     /// 給 Discord 看的完整訊息。
@@ -324,10 +356,7 @@ impl SpannedRollError {
         if pointer.is_empty() {
             return self.message();
         }
-        format!(
-            "{}\n\n```\n{pointer}\n```",
-            self.message()
-        )
+        format!("{}\n\n```\n{pointer}\n```", self.message())
     }
 }
 

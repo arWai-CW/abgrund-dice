@@ -45,7 +45,9 @@ pub enum DiceKind {
     Normal,
     Fate,
     /// `call`: 0 = tails, 1 = heads
-    Coin { call: u8 },
+    Coin {
+        call: u8,
+    },
 }
 
 impl DiceKind {

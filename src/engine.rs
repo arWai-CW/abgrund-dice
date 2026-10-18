@@ -99,7 +99,11 @@ pub fn format_result(rr: &RollResult) -> String {
         evaluator::fmt_num(check.target.value),
         if check.passed { "成功" } else { "失敗" }
     );
-    let base = rr.terms.strip_suffix(&suffix).unwrap_or(&rr.terms).trim_end();
+    let base = rr
+        .terms
+        .strip_suffix(&suffix)
+        .unwrap_or(&rr.terms)
+        .trim_end();
     if evaluator::self_contained(base, rr.total.value) {
         format!("{base}{suffix}")
     } else {
@@ -158,17 +162,17 @@ fn no_prefix_parses(src: &str, src_stripped: &str) -> SpannedRollError {
     let error = RollError::Parse(src.to_string());
     // 第一個詞在 `src` 裡的起點（前導空白不參與解析，位移要補回來）
     let lead = src.len() - src.trim_start().len();
-    let word = src_stripped.split_whitespace().next().unwrap_or(src_stripped);
+    let word = src_stripped
+        .split_whitespace()
+        .next()
+        .unwrap_or(src_stripped);
     let syntax_failure = parser::parse(word)
         .err()
         .filter(|e| matches!(e.error, RollError::Parse(_)))
         .and_then(|e| e.span);
     match syntax_failure {
-        Some(span) => SpannedRollError::at(
-            error,
-            Span::new(lead + span.start, lead + span.end),
-        )
-        .with_formula(src),
+        Some(span) => SpannedRollError::at(error, Span::new(lead + span.start, lead + span.end))
+            .with_formula(src),
         None => SpannedRollError::new(error).with_formula(src),
     }
 }

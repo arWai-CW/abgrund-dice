@@ -444,7 +444,7 @@ fn execute_dice(node: &DiceNode, count: u32, faces: u32, rng: &mut dyn DiceRng) 
             DiceKind::Normal => {
                 assert!(faces >= 1, "faces should be >= 1, got {}", faces);
                 rng.randint(1, faces as i64)
-            },
+            }
         };
         rolls.push(DieRoll::new(value));
     }
@@ -464,7 +464,11 @@ fn execute_dice(node: &DiceNode, count: u32, faces: u32, rng: &mut dyn DiceRng) 
         }
     }
     for m in &node.mods {
-        if let DiceMod::MinMax { kind, bound: Some(b) } = m {
+        if let DiceMod::MinMax {
+            kind,
+            bound: Some(b),
+        } = m
+        {
             minmax(&mut rolls, *kind, *b as i64);
         }
     }
@@ -501,12 +505,16 @@ fn execute_dice(node: &DiceNode, count: u32, faces: u32, rng: &mut dyn DiceRng) 
     }
 
     DiceGroup {
-            notation: node.notation.clone(),
-            kind: node.kind.to_die_kind(),
-            faces: if matches!(node.kind, DiceKind::Fate | DiceKind::Coin { .. }) { 0 } else { faces as i64 },
-            rolls,
-            total,
-        }
+        notation: node.notation.clone(),
+        kind: node.kind.to_die_kind(),
+        faces: if matches!(node.kind, DiceKind::Fate | DiceKind::Coin { .. }) {
+            0
+        } else {
+            faces as i64
+        },
+        rolls,
+        total,
+    }
 }
 
 // ------------------------------------------------------------------ evaluator
@@ -537,10 +545,7 @@ impl<'r> Evaluator<'r> {
         err: RollError,
     ) -> Result<(u32, String), RollError> {
         let (value, render) = self.eval(e)?;
-        let v = value
-            .scalar()
-            .ok_or(RollError::PoolLengthMismatch)?
-            .value;
+        let v = value.scalar().ok_or(RollError::PoolLengthMismatch)?.value;
         if !(v.is_finite() && v.fract() == 0.0 && v >= lo && v <= hi) {
             return Err(err);
         }
@@ -635,12 +640,16 @@ impl<'r> Evaluator<'r> {
                 // 動態骰面時 `min`/`max` 的值域檢查要在這裡做（parser 不知道 faces）
                 // DEBUG: print faces and kind
                 let domain = match node.kind {
-            DiceKind::Coin { .. } => DieKind::Coin.domain(faces),
-            DiceKind::Fate => DieKind::Fate.domain(faces),
-            DiceKind::Normal => DieKind::Normal.domain(faces),
-        };
+                    DiceKind::Coin { .. } => DieKind::Coin.domain(faces),
+                    DiceKind::Fate => DieKind::Fate.domain(faces),
+                    DiceKind::Normal => DieKind::Normal.domain(faces),
+                };
                 for m in &node.mods {
-                    if let DiceMod::MinMax { kind, bound: Some(b) } = m {
+                    if let DiceMod::MinMax {
+                        kind,
+                        bound: Some(b),
+                    } = m
+                    {
                         if let Some(e) = domain.minmax_error(*kind, *b as i64) {
                             return Err(e);
                         }
@@ -821,4 +830,3 @@ impl<'r> Evaluator<'r> {
         Ok((Value::Scalar(pool_total), joined))
     }
 }
-
